@@ -1,6 +1,6 @@
 package br.edu.ifsc.fln.vendas.classificadosifscapi.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -19,13 +19,12 @@ public class Usuario {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @JsonIgnore // 🔥 ESCONDE A SENHA
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // 🔥 SOLUÇÃO PROFISSIONAL
     @Column(nullable = false)
     private String senha;
 
     private String nome;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<Anuncio> anuncios = new ArrayList<>();
 }

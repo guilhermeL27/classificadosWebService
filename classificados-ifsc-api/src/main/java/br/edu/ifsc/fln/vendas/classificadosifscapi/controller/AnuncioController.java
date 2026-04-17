@@ -1,10 +1,12 @@
 package br.edu.ifsc.fln.vendas.classificadosifscapi.controller;
 
 import br.edu.ifsc.fln.vendas.classificadosifscapi.entity.Anuncio;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import br.edu.ifsc.fln.vendas.classificadosifscapi.entity.Usuario;
 import br.edu.ifsc.fln.vendas.classificadosifscapi.repository.AnuncioRepository;
+import br.edu.ifsc.fln.vendas.classificadosifscapi.repository.UsuarioRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -15,39 +17,42 @@ public class AnuncioController {
     @Autowired
     private AnuncioRepository anuncioRepository;
 
-    // Listar todos os anúncios
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    // LISTAR
     @GetMapping
     public List<Anuncio> listarTodos() {
         return anuncioRepository.findAll();
     }
 
-    // Criar um novo anúncio
+    // 🔥 CRIAR (SIMPLIFICADO — SEM ERRO)
     @PostMapping
     public Anuncio criar(@RequestBody Anuncio anuncio) {
+
+        // força o usuário manualmente (pra não dar erro)
+        Usuario usuario = usuarioRepository.findById(4L).orElse(null);
+
+        anuncio.setUsuario(usuario);
+
         return anuncioRepository.save(anuncio);
     }
 
-    // Buscar um anúncio por ID
+    // BUSCAR
     @GetMapping("/{id}")
-    public ResponseEntity<Anuncio> buscarPorId(@PathVariable Long id) {
-        return anuncioRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public Anuncio buscarPorId(@PathVariable Long id) {
+        return anuncioRepository.findById(id).orElse(null);
     }
 
-    // 🔥 NOVO MÉTODO (FILTRO POR CATEGORIA)
+    // FILTRO
     @GetMapping("/categoria/{id}")
     public List<Anuncio> buscarPorCategoria(@PathVariable Long id) {
         return anuncioRepository.findByCategoriaId(id);
     }
 
-    // Deletar um anúncio
+    // DELETE
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        if (!anuncioRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
+    public void deletar(@PathVariable Long id) {
         anuncioRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 }

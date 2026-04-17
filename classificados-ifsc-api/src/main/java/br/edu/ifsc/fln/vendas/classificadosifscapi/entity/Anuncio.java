@@ -30,6 +30,8 @@ public class Anuncio {
 
     private LocalDateTime dataPublicacao = LocalDateTime.now();
 
+    // 🔥 CORREÇÃO DO LOOP INFINITO
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
